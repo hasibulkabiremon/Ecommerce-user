@@ -1,7 +1,10 @@
 
+import 'package:ecom_user_class/pages/cart_page.dart';
 import 'package:ecom_user_class/pages/checkout_page.dart';
+import 'package:ecom_user_class/pages/order_successful_page.dart';
 import 'package:ecom_user_class/pages/otp_verification_page.dart';
 import 'package:ecom_user_class/pages/user_profile.dart';
+import 'package:ecom_user_class/providers/cart_provider.dart';
 import 'package:ecom_user_class/providers/product_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +27,7 @@ void main() async {
     ChangeNotifierProvider(create: (_) => ProductProvider()),
     ChangeNotifierProvider(create: (_) => OrderProvider()),
     ChangeNotifierProvider(create: (_) => UserProvider()),
+    ChangeNotifierProvider(create: (_) => CartProvider()),
   ], child: const MyApp()));
 }
 
@@ -50,6 +54,8 @@ class MyApp extends StatelessWidget {
         UserProfile.routeName: (_) => const UserProfile(),
         OtpVerificationPage.routeName: (_) => const OtpVerificationPage(),
         CheckoutPage.routeName: (_) => const CheckoutPage(),
+        CartPage.routeName: (_) => const CartPage(),
+        OrderSuccessfulPage.routeName: (_) => const OrderSuccessfulPage(),
       },
     );
   }

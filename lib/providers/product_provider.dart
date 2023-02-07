@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:ecom_user_class/models/comment_model.dart';
 import 'package:ecom_user_class/models/rating_model.dart';
 import 'package:ecom_user_class/models/user_model.dart';
+import 'package:ecom_user_class/utils/helper_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -69,10 +71,27 @@ class ProductProvider extends ChangeNotifier {
     final ratinglist = List.generate(snapshot.docs.length,
         (index) => RatingModel.fromMap(snapshot.docs[index].data()));
     double totalRating = 0.0;
-    for(var model in ratinglist){
+    for (var model in ratinglist) {
       totalRating += model.rating;
     }
-    final avgRating = totalRating/ratinglist.length;
-    return DbHelper.userUpdateProductField(productId, {productFieldAvgRating: avgRating});
+    final avgRating = totalRating / ratinglist.length;
+    return DbHelper.userUpdateProductField(
+        productId, {productFieldAvgRating: avgRating});
+  }
+
+  Future<void> addComment(String pid, String comment, UserModel userModel) {
+    final commentModel = CommentModel(
+      commentId: DateTime.now().millisecondsSinceEpoch.toString(),
+      userModel: userModel,
+      productId: pid,
+      comment: comment,
+      date: getFormattedDate(DateTime.now(),pattern: 'dd/MM/yy hh:mm:s a'),
+    );
+    return DbHelper.addComment(commentModel);
+  }
+
+  Future<List<CommentModel>> getAllCommentsByProduct(String productId) async {
+    final snapshot = await DbHelper.getAllCommentsByProduct(productId);
+    return List.generate(snapshot.docs.length, (index) => CommentModel.fromMap(snapshot.docs[index].data()));
   }
 }

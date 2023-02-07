@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecom_user_class/models/cart_model.dart';
+import 'package:ecom_user_class/models/comment_model.dart';
+import 'package:ecom_user_class/models/order_model.dart';
 import 'package:ecom_user_class/models/rating_model.dart';
 import '../models/category_model.dart';
 import '../models/order_constant_model.dart';
@@ -61,4 +64,86 @@ class DbHelper {
   static Future<void> userUpdateProductField(String pid, Map<String, dynamic> map){
     return _db.collection(collectionProduct).doc(pid).update(map);
   }
+
+  static Future<void> addComment(CommentModel commentModel) {
+    return _db.collection(collectionProduct)
+        .doc(commentModel.productId)
+        .collection(collectionComment)
+        .doc(commentModel.commentId)
+        .set(commentModel.toMap());
+  }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>> getAllCommentsByProduct(String productId) =>
+      _db.collection(collectionProduct)
+      .doc(productId)
+      .collection(collectionComment)
+      .where(commentFieldApproved, isEqualTo: true)
+      .get();
+
+  static Future<void> addToCart(String uid, CartModel cartModel) {
+    return _db.collection(collectionUser)
+        .doc(uid)
+        .collection(collectionCart)
+        .doc(cartModel.productId)
+        .set(cartModel.toMap());
+  }
+
+  static Future<void> removeFromCart(String uid, String pid) {
+    return _db.collection(collectionUser)
+        .doc(uid)
+        .collection(collectionCart)
+        .doc(pid).delete();
+  }
+
+  static Stream<QuerySnapshot<Map<String,dynamic>>> getAllCartItems(String uid) {
+    return _db.collection(collectionUser).doc(uid).collection(collectionCart).snapshots();
+  }
+
+  static Future<void> updateCartQuantity(String uid, CartModel cartModel) {
+    return _db.collection(collectionUser)
+        .doc(uid)
+        .collection(collectionCart)
+        .doc(cartModel.productId)
+        .set(cartModel.toMap());
+  }
+
+  static Future<void> clearCart(String uid, List<CartModel> cartList) {
+    final wb = _db.batch();
+    for (final cartItem in cartList){
+      final doc = _db.collection(collectionUser)
+          .doc(uid)
+          .collection(collectionCart)
+          .doc(cartItem.productId);
+      wb.delete(doc);
+    }
+    return wb.commit();
+  }
+
+  static Future<void> saveOrder(OrderModel orderModel) async {
+    final wb = _db.batch();
+    final orderDoc =  _db.collection(collectionOrder).doc(orderModel.orderId);
+    wb.set(orderDoc, orderModel.toMap());
+
+    for(final cartItem in orderModel.productDetails){
+      final proSnapshot = await _db.collection(collectionProduct).doc(cartItem.productId).get();
+      final catSnapshot = await _db.collection(collectionCategory).doc(cartItem.categoryId).get();
+
+      final preProStoct = proSnapshot.data()![productFieldStock];
+      final preCatStoct = catSnapshot.data()![categoryFieldProductCount];
+
+      final proDoc = _db.collection(collectionProduct).doc(cartItem.productId);
+      final catDoc = _db.collection(collectionCategory).doc(cartItem.categoryId);
+
+      wb.update(proDoc, {productFieldStock:(preProStoct-cartItem.quantity)});
+      wb.update(catDoc, {categoryFieldProductCount:(preCatStoct-cartItem.quantity)});
+    }
+    return wb.commit();
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllOrdersByUser(
+      String uid) =>
+      _db.collection(collectionOrder)
+          .where(orderFieldUserId, isEqualTo: uid)
+          .snapshots();
+
 }

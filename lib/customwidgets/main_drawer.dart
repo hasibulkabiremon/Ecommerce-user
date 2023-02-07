@@ -1,9 +1,12 @@
+import 'package:ecom_user_class/pages/checkout_page.dart';
 import 'package:ecom_user_class/pages/login_page.dart';
 import 'package:ecom_user_class/pages/user_profile.dart';
 import 'package:flutter/material.dart';
 
 import '../auth/authservice.dart';
+import '../pages/cart_page.dart';
 import '../pages/launcher_page.dart';
+import '../pages/order_page.dart';
 
 class MainDrawer extends StatelessWidget {
   const MainDrawer({Key? key}) : super(key: key);
@@ -26,12 +29,16 @@ class MainDrawer extends StatelessWidget {
             title: const Text('My Profile'),
           ),
           if(!AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, CartPage.routeName);
+            },
             leading: const Icon(Icons.shopping_cart),
             title: const Text('My Cart'),
           ),
           if(!AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, OrderPage.routeName);
+              },
             leading: const Icon(Icons.monetization_on),
             title: const Text('My Orders'),
           ),

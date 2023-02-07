@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecom_user_class/pages/product_details_page.dart';
+import 'package:ecom_user_class/providers/cart_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../customwidgets/cart_bubble_view.dart';
 import '../customwidgets/main_drawer.dart';
 import '../customwidgets/product_grid_item_view.dart';
 import '../models/category_model.dart';
@@ -27,7 +29,9 @@ class _ViewProductPageState extends State<ViewProductPage> {
     Provider.of<ProductProvider>(context, listen: false).getAllCategories();
     Provider.of<ProductProvider>(context, listen: false).getAllProducts();
     Provider.of<OrderProvider>(context, listen: false).getOrderConstants();
+    Provider.of<OrderProvider>(context, listen: false).getAllOrders();
     Provider.of<UserProvider>(context, listen: false).getUserInfo();
+    Provider.of<CartProvider>(context, listen: false).getAllCartItems();
     super.didChangeDependencies();
   }
 
@@ -43,6 +47,9 @@ class _ViewProductPageState extends State<ViewProductPage> {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
+                actions: [
+                  CartBubbleView()
+                ],
                 expandedHeight: 250,
                 pinned: true,
                 floating: true,
