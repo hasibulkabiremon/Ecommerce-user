@@ -5,8 +5,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/authservice.dart';
+import '../models/notification_model.dart';
 import '../models/user_model.dart';
+import '../providers/notification_provider.dart';
 import '../providers/user_provider.dart';
+import '../utils/constants.dart';
 import 'launcher_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -166,6 +169,14 @@ class _LoginPageState extends State<LoginPage> {
               Timestamp.fromDate(credential.user!.metadata.creationTime!),
             );
             await userProvider.addUser(userModel);
+
+            final notificationModel = NotificationModel(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                type: NotificationType.user,
+                message: 'A new user ${userModel.email} has joined!',
+                userModel: userModel
+            );
+            await Provider.of<NotificationProvider>(context, listen: false).addNotification(notificationModel);
           }
 
         }

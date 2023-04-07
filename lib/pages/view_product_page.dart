@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ecom_user_class/main.dart';
 import 'package:ecom_user_class/pages/product_details_page.dart';
 import 'package:ecom_user_class/providers/cart_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 import '../customwidgets/cart_bubble_view.dart';
@@ -48,7 +50,12 @@ class _ViewProductPageState extends State<ViewProductPage> {
             slivers: [
               SliverAppBar(
                 actions: [
-                  CartBubbleView()
+                  CartBubbleView(),
+                  IconButton(
+                      onPressed: () {
+                        _sendNotifications();
+                      },
+                      icon: const Icon(Icons.notifications))
                 ],
                 expandedHeight: 250,
                 pinned: true,
@@ -74,9 +81,10 @@ class _ViewProductPageState extends State<ViewProductPage> {
                           },
                           items: provider
                               .getCategoryListForFiltering()
-                              .map((catModel) => DropdownMenuItem(
-                              value: catModel,
-                              child: Text(catModel.categoryName)))
+                              .map((catModel) =>
+                              DropdownMenuItem(
+                                  value: catModel,
+                                  child: Text(catModel.categoryName)))
                               .toList(),
                           onChanged: (value) {
                             setState(() {
@@ -127,8 +135,9 @@ class _ViewProductPageState extends State<ViewProductPage> {
             },
             items: provider
                 .getCategoryListForFiltering()
-                .map((catModel) => DropdownMenuItem(
-                value: catModel, child: Text(catModel.categoryName)))
+                .map((catModel) =>
+                DropdownMenuItem(
+                    value: catModel, child: Text(catModel.categoryName)))
                 .toList(),
             onChanged: (value) {
               setState(() {
@@ -158,5 +167,23 @@ class _ViewProductPageState extends State<ViewProductPage> {
         ),
       ],
     );
+  }
+
+  void _sendNotifications() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+    AndroidNotificationDetails('channel01', 'description',
+        channelDescription: 'Test',
+        importance: Importance.max,
+        priority: Priority.high,
+        ticker: 'ticker'
+    );
+
+    const NotificationDetails notificationDetails =
+    NotificationDetails(
+        android: androidNotificationDetails
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+        0, 'plain title', 'plain body', notificationDetails, payload: 'item x');
   }
 }

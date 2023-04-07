@@ -8,8 +8,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
+import '../models/notification_model.dart';
 import '../models/product_model.dart';
 import '../providers/cart_provider.dart';
+import '../providers/notification_provider.dart';
 import '../providers/product_provider.dart';
 import '../utils/constants.dart';
 
@@ -206,15 +208,26 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         return;
                       }
                       EasyLoading.show(status: 'Please Wait');
-                      await productProvider.addComment(
-                          productModel.productId!,
-                          txtcontroller.text,
-                          (context.read<UserProvider>().userModel!));
+                      final commentModel = CommentModel(
+                        commentId: DateTime.now().millisecondsSinceEpoch.toString(),
+                        userModel: context.read<UserProvider>().userModel!,
+                        productId: productModel.productId!,
+                        comment: txtcontroller.text,
+                        date: getFormattedDate(DateTime.now(),pattern: 'dd/MM/yy hh:mm:s a'),
+                      );
+                      await productProvider.addComment(commentModel);
                       EasyLoading.dismiss();
                       focusNode.unfocus();
                       txtcontroller.clear();
                       showMsg(context,
                           'Thanks for Comment. Please wait for approval');
+                      final notificationModel = NotificationModel(
+                          id: DateTime.now().millisecondsSinceEpoch.toString(),
+                          type: NotificationType.comment,
+                          message: 'Product ${productModel.productName} has a new comment which is waiting fot your approval',
+                          commentModel: commentModel
+                      );
+                      await Provider.of<NotificationProvider>(context, listen: false).addNotification(notificationModel);
                     },
                     child: Text('Submit'))
               ],

@@ -6,6 +6,7 @@ import 'package:ecom_user_class/models/order_model.dart';
 import 'package:ecom_user_class/pages/order_successful_page.dart';
 import 'package:ecom_user_class/pages/view_product_page.dart';
 import 'package:ecom_user_class/providers/cart_provider.dart';
+import 'package:ecom_user_class/providers/notification_provider.dart';
 import 'package:ecom_user_class/providers/order_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
 import 'package:ecom_user_class/utils/constants.dart';
@@ -13,6 +14,8 @@ import 'package:ecom_user_class/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+
+import '../models/notification_model.dart';
 
 class CheckoutPage extends StatefulWidget {
   static const String routeName = '/checkout';
@@ -154,7 +157,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
               decoration: InputDecoration(hintText: 'Address Line 2'),
             ),
             TextField(
-              controller: addressLine2Controller,
+              controller: zipCodeController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(hintText: 'ZipCode'),
             ),
@@ -234,11 +237,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       VAT: orderProvider.orderConstantModel.vat,
       deliveryCharge: orderProvider.orderConstantModel.deliveryCharge,
       orderDate: DateModel(
-        timestamp: Timestamp.fromDate(DateTime.now()),
-        day: DateTime.now().day,
-        month: DateTime.now().month,
-        year: DateTime.now().year
-      ),
+          timestamp: Timestamp.fromDate(DateTime.now()),
+          day: DateTime.now().day,
+          month: DateTime.now().month,
+          year: DateTime.now().year),
       deliveryAddress: AddressModel(
         addressLine1: addressLine1Controller.text,
         addressLine2: addressLine2Controller.text,
@@ -247,12 +249,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
       ),
       productDetails: cartProvider.cartList,
     );
-    try{
+    try {
       await orderProvider.saveOrder(orderModel);
       await cartProvider.clearCart();
       EasyLoading.dismiss();
-      Navigator.pushNamedAndRemoveUntil(context, OrderSuccessfulPage.routeName, ModalRoute.withName(ViewProductPage.routeName));
-    }catch (error){
+      final notificationModel = NotificationModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: NotificationType.order,
+        message: 'A new order has been place #${orderModel.orderId}',
+        orderModel: orderModel
+      );
+      await Provider.of<NotificationProvider>(context, listen: false).addNotification(notificationModel);
+
+      Navigator.pushNamedAndRemoveUntil(context, OrderSuccessfulPage.routeName,
+          ModalRoute.withName(ViewProductPage.routeName));
+    } catch (error) {
       EasyLoading.dismiss();
       print(error.toString());
       rethrow;
