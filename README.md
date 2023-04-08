@@ -17,4 +17,4 @@ samples, guidance on mobile development, and a full API reference.
 
 Fire base Notification
 
-![Screenshot_2023-04-07-20-34-37-47_2114b2c93e4af39b4f91e34b7eed3f35](https://user-images.githubusercontent.com/62188211/230627609-bc940f4d-24c8-441e-b6e3-d021ea4ac347.jpg | height=100)
+![Screenshot_2023-04-07-20-34-37-47_2114b2c93e4af39b4f91e34b7eed3f35](https://user-images.githubusercontent.com/62188211/230627609-bc940f4d-24c8-441e-b6e3-d021ea4ac347.jpg)
