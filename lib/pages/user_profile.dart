@@ -19,8 +19,10 @@ class UserProfile extends StatelessWidget {
     final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.black),
+          backgroundColor: Colors.white,
           elevation: 0,
-          title: Text('Profile Page'),
+          title: Text('Profile Page',style: TextStyle(color: Colors.black),),
         ),
         body: userProvider.userModel == null
             ? Center(

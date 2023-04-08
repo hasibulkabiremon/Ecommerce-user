@@ -8,7 +8,9 @@ class OrderSuccessfulPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Placed'),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: const Text('Order Placed',style: TextStyle(color: Colors.black),),
       ),
       body: Center(
         child: Column(

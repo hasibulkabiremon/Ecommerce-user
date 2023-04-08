@@ -49,7 +49,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CheckOut Page'),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: const Text('CheckOut Page',style: TextStyle(color: Colors.black),),
       ),
       body: ListView(
         padding: const EdgeInsets.all(8),

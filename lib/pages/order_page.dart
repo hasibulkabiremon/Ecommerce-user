@@ -20,8 +20,11 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
-        title: const Text('Orders'),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: const Text('Orders',style: TextStyle(color: Colors.black),),
       ),
       body: SingleChildScrollView(
         child: Container(

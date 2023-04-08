@@ -44,7 +44,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(productModel.productName),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: Text(productModel.productName,style: const TextStyle(color: Colors.black),),
       ),
       body: ListView(
         children: [
@@ -111,8 +113,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 Expanded(
                     child: OutlinedButton.icon(
                   onPressed: () {},
-                  icon: Icon(Icons.favorite),
-                  label: Text('Add to Favorite'),
+                  icon: Icon(Icons.favorite,color: Colors.pink,),
+                  label: Text('Add to Favorite',style: TextStyle(color: Colors.black),),
                 )),
                 Expanded(child: Consumer<CartProvider>(
                   builder: (context, provider, child) {
@@ -125,8 +127,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           provider.addToCart(productModel);
                         }
                       },
-                      icon: Icon(inInCart ? Icons.remove_shopping_cart : Icons.shopping_cart),
-                      label: Text(inInCart ?'Remove from Cart': 'Add to Cart'),
+                      icon: Icon(inInCart ? Icons.remove_shopping_cart : Icons.shopping_cart,color: Colors.black,),
+                      label: Text(inInCart ?'Remove from Cart': 'Add to Cart',style: TextStyle(color: Colors.black),),
                     );
                   },
                 ))

@@ -102,14 +102,17 @@ class _ViewProductPageState extends State<ViewProductPage> {
           return CustomScrollView(
             slivers: [
               SliverAppBar(
+                title: const Text('Products',style: TextStyle(color: Colors.black),),
+                iconTheme: IconThemeData(color: Colors.black),
                 actions: [
                   CartBubbleView(),
                 ],
-                expandedHeight: 250,
+                backgroundColor: Colors.white,
+                expandedHeight: 100,
                 pinned: true,
                 floating: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: const Text('Products'),
+                  // title: const Text('Products'),
                   background: ListView(
                     children: [
                       const SizedBox(

@@ -14,7 +14,9 @@ class CartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cart List'),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        title: Text('Cart List',style: TextStyle(color: Colors.black),),
       ),
       body: Consumer<CartProvider>(
         builder: (context, provider, child) => Column(

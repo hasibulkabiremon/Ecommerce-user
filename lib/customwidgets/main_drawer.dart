@@ -13,52 +13,62 @@ class MainDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: [
-          Container(
-            color: Theme.of(context).primaryColor,
-            height: 150,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Align(
+        alignment: Alignment.center,
+        child: SizedBox(
+          height: 300,
+          width: 200,
+          child: Drawer(
+            child: ListView(
+              children: [
+                // Container(
+                //   color: Colors.white,
+                //   height: 150,
+                // ),
+                if(!AuthService.currentUser!.isAnonymous)ListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, UserProfile.routeName);
+                  },
+                  leading: const Icon(Icons.person),
+                  title: const Text('My Profile'),
+                ),
+                if(!AuthService.currentUser!.isAnonymous)ListTile(
+                  onTap: () {
+                    Navigator.pushNamed(context, CartPage.routeName);
+                  },
+                  leading: const Icon(Icons.shopping_cart),
+                  title: const Text('My Cart'),
+                ),
+                if(!AuthService.currentUser!.isAnonymous)ListTile(
+                  onTap: () {
+                    Navigator.pushNamed(context, OrderPage.routeName);
+                    },
+                  leading: const Icon(Icons.monetization_on),
+                  title: const Text('My Orders'),
+                ),
+                if(AuthService.currentUser!.isAnonymous)ListTile(
+                  onTap: () {
+                    Navigator.pushReplacementNamed(context, LoginPage.routeName);
+                  },
+                  leading: const Icon(Icons.person),
+                  title: const Text('Login/Register'),
+                ),
+                ListTile(
+                  onTap: () {
+                    AuthService.logout().then((value) =>
+                        Navigator.pushReplacementNamed(
+                            context, LauncherPage.routeName));
+                  },
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                ),
+              ],
+            ),
           ),
-          if(!AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, UserProfile.routeName);
-            },
-            leading: const Icon(Icons.person),
-            title: const Text('My Profile'),
-          ),
-          if(!AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, CartPage.routeName);
-            },
-            leading: const Icon(Icons.shopping_cart),
-            title: const Text('My Cart'),
-          ),
-          if(!AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, OrderPage.routeName);
-              },
-            leading: const Icon(Icons.monetization_on),
-            title: const Text('My Orders'),
-          ),
-          if(AuthService.currentUser!.isAnonymous)ListTile(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, LoginPage.routeName);
-            },
-            leading: const Icon(Icons.person),
-            title: const Text('Login/Register'),
-          ),
-          ListTile(
-            onTap: () {
-              AuthService.logout().then((value) =>
-                  Navigator.pushReplacementNamed(
-                      context, LauncherPage.routeName));
-            },
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
-          ),
-        ],
+        ),
       ),
     );
   }
