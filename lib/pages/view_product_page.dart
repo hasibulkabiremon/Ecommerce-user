@@ -3,6 +3,8 @@ import 'package:ecom_user_class/main.dart';
 import 'package:ecom_user_class/pages/product_details_page.dart';
 import 'package:ecom_user_class/providers/cart_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
+import 'package:ecom_user_class/utils/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,7 @@ import '../customwidgets/product_grid_item_view.dart';
 import '../models/category_model.dart';
 import '../providers/order_provider.dart';
 import '../providers/product_provider.dart';
+import 'order_page.dart';
 
 class ViewProductPage extends StatefulWidget {
   static const String routeName = '/viewproduct';
@@ -25,6 +28,56 @@ class ViewProductPage extends StatefulWidget {
 
 class _ViewProductPageState extends State<ViewProductPage> {
   CategoryModel? categoryModel;
+
+  @override
+  void initState() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // print('Got a message whilst in the foreground!');
+      // print('Message data: ${message.data}');
+
+      if (message.notification != null){
+        // print('Message also contained a notification: ${message.notification}');
+        NotificationService service = NotificationService();
+        service.sendNotifications(message);
+      }
+    });
+
+    setupInteractedMessage();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  Future<void> setupInteractedMessage() async {
+    // Get any messages which caused the application to open from
+    // a terminated state.
+    RemoteMessage? initialMessage =
+    await FirebaseMessaging.instance.getInitialMessage();
+
+    // If the message also contains a data property with a "type" of "chat",
+    // navigate to a chat screen
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    // Also handle any interaction when the app is in the background via a
+    // Stream listener
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    if (message.data['key'] == 'order') {
+      Navigator.pushNamed(context, OrderPage.routeName,
+      );
+    }
+    if (message.data['key'] == 'product') {
+      final id = message.data['value'];
+      Provider.of<ProductProvider>(context,listen: false).getProductById(id).then((productModel) =>
+          Navigator.pushNamed(context, ProductDetailsPage.routeName, arguments: productModel
+          )
+      );
+
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -51,11 +104,6 @@ class _ViewProductPageState extends State<ViewProductPage> {
               SliverAppBar(
                 actions: [
                   CartBubbleView(),
-                  IconButton(
-                      onPressed: () {
-                        _sendNotifications();
-                      },
-                      icon: const Icon(Icons.notifications))
                 ],
                 expandedHeight: 250,
                 pinned: true,
@@ -169,21 +217,4 @@ class _ViewProductPageState extends State<ViewProductPage> {
     );
   }
 
-  void _sendNotifications() async {
-    const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails('channel01', 'description',
-        channelDescription: 'Test',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker'
-    );
-
-    const NotificationDetails notificationDetails =
-    NotificationDetails(
-        android: androidNotificationDetails
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-        0, 'plain title', 'plain body', notificationDetails, payload: 'item x');
-  }
 }

@@ -8,6 +8,7 @@ import 'package:ecom_user_class/providers/cart_provider.dart';
 import 'package:ecom_user_class/providers/notification_provider.dart';
 import 'package:ecom_user_class/providers/product_provider.dart';
 import 'package:ecom_user_class/providers/user_provider.dart';
+import 'package:ecom_user_class/utils/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,6 @@ import 'pages/product_details_page.dart';
 import 'pages/view_product_page.dart';
 import 'providers/order_provider.dart';
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -37,6 +36,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final fcmToken = await FirebaseMessaging.instance.getToken();
+  await FirebaseMessaging.instance.subscribeToTopic('promo');
+  await FirebaseMessaging.instance.subscribeToTopic('newproduct');
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   print('FCM TOKEN $fcmToken');
   runApp(MultiProvider(providers: [
@@ -58,71 +59,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
-    flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()!.requestPermission();
-    AndroidInitializationSettings initializationSettingsAndroid =
-    AndroidInitializationSettings('ic_notifications');
-    final InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
     WidgetsBinding.instance.addObserver(this);
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
-
-      if (message.notification != null){
-        print('Message also contained a notification: ${message.notification}');
-        _sendNotifications(message);
-      }
-    });
-
-    setupInteractedMessage();
-    // TODO: implement initState
     super.initState();
-  }
-
-  Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage =
-    await FirebaseMessaging.instance.getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
-    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
-  }
-
-  void _handleMessage(RemoteMessage message) {
-    if (message.data['key'] == 'order') {
-      Navigator.pushNamed(context, OrderPage.routeName,
-      );
-    }
-  }
-
-  void _sendNotifications(RemoteMessage message) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-    AndroidNotificationDetails('channel01', 'description',
-        channelDescription: 'Test',
-        importance: Importance.max,
-        priority: Priority.high,
-        ticker: 'ticker'
-    );
-
-    const NotificationDetails notificationDetails =
-    NotificationDetails(
-        android: androidNotificationDetails
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-        0, message.notification!.title, message.notification!.body, notificationDetails, payload: 'item x');
   }
 
 
