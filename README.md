@@ -15,3 +15,8 @@
 ## Login Page :
 
 ![login](https://user-images.githubusercontent.com/62188211/230734008-f190a4ea-162e-4a9f-ae97-ec17203ec21f.jpg)
+
+
+## Animated prompt
+https://user-images.githubusercontent.com/62188211/231662279-7389b818-ec55-4cab-8641-b8ad66015795.mp4
+
